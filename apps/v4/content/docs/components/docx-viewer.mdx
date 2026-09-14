@@ -32,7 +32,7 @@ npx shadcn@latest add @extend/docx-viewer
 <Step>Install the following dependencies:</Step>
 
 ```bash
-npm install @extend-ai/react-docx@^0.9.1
+npm install @extend-ai/react-docx@^0.9.2
 ```
 
 <Step>Install the icon library configured in your `components.json`:</Step>
@@ -62,6 +62,7 @@ prop for your library.
 - Preserve headings, lists, tables, images, headers, footers, and page breaks.
 - Expose document outline and section anchors.
 - Support comments, tracked-change surfaces, and copyable text.
+- Switch between numeric, fit-page, fit-width, and automatic zoom levels.
 - Treat legacy .doc files as limited/experimental; convert them to DOCX when fidelity matters.
 - Provide a predictable fallback state for unsupported Word features.
 
@@ -71,11 +72,15 @@ prop for your library.
 
 The DocxViewerPreview component renders a DOCX file with upload, theme, and zoom controls around the `@extend-ai/react-docx` viewer. Legacy .doc support is limited and experimental.
 
-| Prop                          | Type                        | Default | Required |
-| ----------------------------- | --------------------------- | ------- | -------- |
-| `className`                   | `string`                    | `-`     | No       |
-| `defaultThumbnailSidebarOpen` | `boolean`                   | `false` | No       |
-| `fileName`                    | `string`                    | `-`     | No       |
-| `isDark`                      | `boolean`                   | `-`     | Yes      |
-| `onIsDarkChange`              | `(isDark: boolean) => void` | `-`     | Yes      |
-| `src`                         | `string`                    | `-`     | No       |
+| Prop             | Type                                                 | Default | Required |
+| ---------------- | ---------------------------------------------------- | ------- | -------- |
+| `className`      | `string`                                             | `-`     | No       |
+| `defaultZoom`    | `number \| "fit-page" \| "fit-width" \| "automatic"` | `50`    | No       |
+| `fileName`       | `string`                                             | `-`     | No       |
+| `isDark`         | `boolean`                                            | `-`     | Yes      |
+| `onIsDarkChange` | `(isDark: boolean) => void`                          | `-`     | Yes      |
+| `showDownload`   | `boolean`                                            | `true`  | No       |
+| `showToolbar`    | `boolean`                                            | `true`  | No       |
+| `showUpload`     | `boolean`                                            | `true`  | No       |
+| `src`            | `string`                                             | `-`     | No       |
+| `toolbarActions` | `React.ReactNode`                                    | `-`     | No       |

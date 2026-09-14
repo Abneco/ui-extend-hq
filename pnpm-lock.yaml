@@ -124,11 +124,11 @@ importers:
         specifier: 2.15.0
         version: 2.15.0(preact@11.0.0-beta.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(svelte@5.56.3(@typescript-eslint/types@8.59.1))(vue@3.5.38(typescript@5.9.2))
       '@extend-ai/react-docx':
-        specifier: 0.9.1
-        version: 0.9.1(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+        specifier: 0.9.2
+        version: 0.9.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@extend-ai/react-pptx':
-        specifier: 0.2.0
-        version: 0.2.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+        specifier: 0.2.1
+        version: 0.2.1(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@extend-ai/react-xlsx':
         specifier: 0.16.4
         version: 0.16.4(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -1475,14 +1475,14 @@ packages:
     resolution: {integrity: sha512-ZAoA40rNMPwSm+AeHpCq8STiNAwzWLJuP8Xv4CHIc9wv/PSuExjMrmjfYNj682vW0OOiZ1HKxzvjQr9XZIisQA==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
-  '@extend-ai/react-docx@0.9.1':
-    resolution: {integrity: sha512-h3vL+AJqprMwvEMBjKwwrpaSdmtN+haKgLeCKcsOyJPmSG9KZMQUBOwxFCW7LE1XFu5K3so/Qvt5VxURotM7DA==}
+  '@extend-ai/react-docx@0.9.2':
+    resolution: {integrity: sha512-J+eEhItSPWmH7npLb453yw3LoPKIx7CD0slueNHCngk5U9zG5gTjybJw1Mogderb1aEcJQPBaM4LGGPnz0ADEA==}
     peerDependencies:
       react: '>=18'
       react-dom: '>=18'
 
-  '@extend-ai/react-pptx@0.2.0':
-    resolution: {integrity: sha512-Wmk+F1iryb/xvx/VN7BrJXU/M7vcDxTF+81paEgkuYthsxDmTJO9oGRJco7EhgPdbIa5JnWLscdmHnfFo1bzUA==}
+  '@extend-ai/react-pptx@0.2.1':
+    resolution: {integrity: sha512-N5XfCGLfdvwY2LRnTz7m4p5gi7nOYgdNnSudB/yPYSjjpBquN9d6nIDcNB/hojMxZwJJRLNR0Ayp8puRjh+heA==}
     peerDependencies:
       react: '>=18.2 <20'
       react-dom: '>=18.2 <20'
@@ -7615,7 +7615,7 @@ snapshots:
       '@eslint/core': 0.13.0
       levn: 0.4.1
 
-  '@extend-ai/react-docx@0.9.1(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
+  '@extend-ai/react-docx@0.9.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@chenglou/pretext': 0.0.8
       '@tanstack/react-virtual': 3.13.26(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -7624,7 +7624,7 @@ snapshots:
       react-dom: 19.2.3(react@19.2.3)
       utif: 3.1.0
 
-  '@extend-ai/react-pptx@0.2.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
+  '@extend-ai/react-pptx@0.2.1(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@tanstack/react-virtual': 3.13.26(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@tanstack/virtual-core': 3.16.0

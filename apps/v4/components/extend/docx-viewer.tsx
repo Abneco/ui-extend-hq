@@ -11,6 +11,8 @@ import {
   type DocxDocumentTheme,
   type DocxEditorController,
   type DocxPageThumbnailItem,
+  type ViewerZoomLevel,
+  type ViewerZoomState,
 } from "@extend-ai/react-docx"
 import { useVirtualizer } from "@tanstack/react-virtual"
 
@@ -60,7 +62,12 @@ const DOCX_THUMBNAIL_WIDTH = 92
 const DOCX_THUMBNAIL_LIST_PADDING = 16
 const DOCX_THUMBNAIL_ROW_ESTIMATE = 172
 const DEFAULT_ZOOM = 50
-const ZOOM_OPTIONS = [10, 25, 50, 75, 100, 125, 150, 175, 200, 400] as const
+const ZOOM_OPTIONS = [50, 75, 100, 125, 150, 175, 200] as const
+const ZOOM_MODE_LABELS = {
+  "fit-page": "Fit page",
+  "fit-width": "Fit width",
+  automatic: "Automatic",
+} satisfies Record<Exclude<ViewerZoomLevel, number>, string>
 const DOCX_PADDING_WARNING_TEXT = "a style property during rerender"
 const DOCX_THUMBNAIL_FOCUS_RING_CLASS =
   "group-focus-visible/docx-thumbnail-sidebar:ring-2 group-focus-visible/docx-thumbnail-sidebar:ring-ring group-focus-visible/docx-thumbnail-sidebar:ring-offset-1 group-focus-visible/docx-thumbnail-sidebar:ring-offset-background"
@@ -193,38 +200,28 @@ async function downloadDocxFile({
 }
 
 function getNextZoomScale(currentZoomScale: number, direction: 1 | -1) {
-  const currentIndex = ZOOM_OPTIONS.indexOf(
-    currentZoomScale as (typeof ZOOM_OPTIONS)[number]
-  )
-  let fallbackIndex = -1
-
   if (direction > 0) {
-    fallbackIndex = ZOOM_OPTIONS.findIndex((value) => value > currentZoomScale)
-  } else {
-    for (let index = ZOOM_OPTIONS.length - 1; index >= 0; index -= 1) {
-      if (ZOOM_OPTIONS[index] < currentZoomScale) {
-        fallbackIndex = index
-        break
-      }
-    }
+    return (
+      ZOOM_OPTIONS.find((value) => value > currentZoomScale) ?? currentZoomScale
+    )
   }
 
-  const resolvedIndex = currentIndex >= 0 ? currentIndex : fallbackIndex
-  if (resolvedIndex < 0) return currentZoomScale
+  for (let index = ZOOM_OPTIONS.length - 1; index >= 0; index -= 1) {
+    const value = ZOOM_OPTIONS[index]
+    if (value < currentZoomScale) return value
+  }
 
-  const nextIndex = Math.min(
-    Math.max(resolvedIndex + direction, 0),
-    ZOOM_OPTIONS.length - 1
-  )
-
-  return ZOOM_OPTIONS[nextIndex] ?? currentZoomScale
+  return currentZoomScale
 }
 
-function normalizeDocxZoomScale(value: number | undefined): number {
-  return typeof value === "number" &&
-    ZOOM_OPTIONS.includes(value as (typeof ZOOM_OPTIONS)[number])
-    ? value
-    : DEFAULT_ZOOM
+function normalizeDocxZoomLevel(
+  value: ViewerZoomLevel | undefined
+): ViewerZoomLevel {
+  return value ?? DEFAULT_ZOOM
+}
+
+function isZoomMode(value: string): value is Exclude<ViewerZoomLevel, number> {
+  return value in ZOOM_MODE_LABELS
 }
 
 function useDelayedLoadingIndicator(isLoading: boolean, delayMs: number) {
@@ -561,15 +558,16 @@ function DocxToolbar({
   onShowTrackedChangesChange,
   onToggleSidebar,
   onUploadClick,
+  onZoomChange,
   pageCount,
-  setZoomScale,
+  resolvedZoom,
   showComments,
   showDownloadButton = true,
   showNightRenderToggle,
   showTrackedChanges,
   showUploadButton = true,
   toolbarActions,
-  zoomScale,
+  zoomLevel,
 }: {
   activePageStore: DocxActivePageStore
   controlsDisabled: boolean
@@ -582,18 +580,27 @@ function DocxToolbar({
   onShowTrackedChangesChange: (checked: boolean) => void
   onToggleSidebar: () => void
   onUploadClick: () => void
+  onZoomChange: (zoomLevel: ViewerZoomLevel) => void
   pageCount: number
-  setZoomScale: React.Dispatch<React.SetStateAction<number>>
+  resolvedZoom: number
   showComments: boolean
   showDownloadButton?: boolean
   showNightRenderToggle: boolean
   showTrackedChanges: boolean
   showUploadButton?: boolean
   toolbarActions?: React.ReactNode
-  zoomScale: number
+  zoomLevel: ViewerZoomLevel
 }) {
-  const canZoomIn = zoomScale < ZOOM_OPTIONS[ZOOM_OPTIONS.length - 1]
-  const canZoomOut = zoomScale > ZOOM_OPTIONS[0]
+  const canZoomIn = resolvedZoom < ZOOM_OPTIONS[ZOOM_OPTIONS.length - 1]
+  const canZoomOut = resolvedZoom > ZOOM_OPTIONS[0]
+  const selectValue =
+    typeof zoomLevel === "number" ? zoomLevel.toString() : zoomLevel
+  const roundedZoom = Number(resolvedZoom.toFixed(2))
+  const zoomOptions = ZOOM_OPTIONS.includes(
+    roundedZoom as (typeof ZOOM_OPTIONS)[number]
+  )
+    ? ZOOM_OPTIONS
+    : [...ZOOM_OPTIONS, roundedZoom].sort((left, right) => left - right)
 
   return (
     <div className="flex min-h-12 flex-wrap items-center justify-between gap-2 border-b bg-background px-3 py-2">
@@ -634,11 +641,7 @@ function DocxToolbar({
                 size="icon-sm"
                 disabled={controlsDisabled || !canZoomOut}
                 aria-label="Zoom out"
-                onClick={() =>
-                  setZoomScale((currentZoomScale) =>
-                    getNextZoomScale(currentZoomScale, -1)
-                  )
-                }
+                onClick={() => onZoomChange(getNextZoomScale(resolvedZoom, -1))}
               >
                 <IconPlaceholder
                   lucide="CircleMinus"
@@ -651,20 +654,28 @@ function DocxToolbar({
               </Button>
             </ToolbarTooltip>
             <Select
-              value={zoomScale.toString()}
-              onValueChange={(value) => setZoomScale(Number(value))}
+              value={selectValue}
+              onValueChange={(value) => {
+                if (value === null) return
+                onZoomChange(isZoomMode(value) ? value : Number(value))
+              }}
               disabled={controlsDisabled}
               modal={false}
             >
               <SelectTrigger
                 size="sm"
-                className="w-[84px] min-w-[84px]"
+                className="w-[104px] min-w-[104px]"
                 aria-label="Zoom level"
               >
-                <SelectValue>{Math.round(zoomScale)}%</SelectValue>
+                <SelectValue>{Math.round(resolvedZoom)}%</SelectValue>
               </SelectTrigger>
               <SelectContent align="end" alignItemWithTrigger={false}>
-                {ZOOM_OPTIONS.map((value) => (
+                {Object.entries(ZOOM_MODE_LABELS).map(([value, label]) => (
+                  <SelectItem key={value} value={value}>
+                    {label}
+                  </SelectItem>
+                ))}
+                {zoomOptions.map((value) => (
                   <SelectItem key={value} value={value.toString()}>
                     {value}%
                   </SelectItem>
@@ -678,11 +689,7 @@ function DocxToolbar({
                 size="icon-sm"
                 disabled={controlsDisabled || !canZoomIn}
                 aria-label="Zoom in"
-                onClick={() =>
-                  setZoomScale((currentZoomScale) =>
-                    getNextZoomScale(currentZoomScale, 1)
-                  )
-                }
+                onClick={() => onZoomChange(getNextZoomScale(resolvedZoom, 1))}
               >
                 <IconPlaceholder
                   lucide="CirclePlusIcon"
@@ -1103,7 +1110,7 @@ export function DocxViewerPreview({
   toolbarActions,
 }: {
   className?: string
-  defaultZoom?: number
+  defaultZoom?: ViewerZoomLevel
   fileName?: string
   isDark: boolean
   onIsDarkChange: (isDark: boolean) => void
@@ -1144,7 +1151,7 @@ function DocxViewerContent({
   url,
 }: {
   className?: string
-  defaultZoom?: number
+  defaultZoom?: ViewerZoomLevel
   effectiveIsDark: boolean
   fileName?: string
   setNightRenderEnabled: (checked: boolean) => void
@@ -1164,7 +1171,7 @@ function DocxViewerContent({
     React.useState<UploadedDocxFile | null>(null)
   const [sidebarOpen, setSidebarOpen] = React.useState(false)
   const activePageStore = React.useMemo(() => createDocxActivePageStore(), [])
-  const resolvedDefaultZoomScale = normalizeDocxZoomScale(defaultZoom)
+  const resolvedDefaultZoomLevel = normalizeDocxZoomLevel(defaultZoom)
   const activeUploadedDocxFile =
     uploadedDocxFile?.sourceUrl === url ? uploadedDocxFile : null
   const documentKey = activeUploadedDocxFile?.identity ?? url ?? ""
@@ -1195,32 +1202,41 @@ function DocxViewerContent({
   const { showTrackedChanges, setShowTrackedChanges } =
     useDocxTrackChanges(editor)
   const [reportedPageCount, setReportedPageCount] = React.useState(0)
-  const [zoomScaleState, setZoomScaleState] = React.useState({
+  const [zoomState, setZoomState] = React.useState({
     documentKey: "",
-    value: resolvedDefaultZoomScale,
+    level: resolvedDefaultZoomLevel,
+    resolvedZoom:
+      typeof resolvedDefaultZoomLevel === "number"
+        ? resolvedDefaultZoomLevel
+        : DEFAULT_ZOOM,
   })
-  const zoomScale =
-    zoomScaleState.documentKey === documentKey
-      ? zoomScaleState.value
-      : resolvedDefaultZoomScale
-  const setZoomScale = React.useCallback<
-    React.Dispatch<React.SetStateAction<number>>
-  >(
-    (nextZoomScale) => {
-      setZoomScaleState((currentState) => {
-        const currentZoomScale =
-          currentState.documentKey === documentKey
-            ? currentState.value
-            : resolvedDefaultZoomScale
-        const value =
-          typeof nextZoomScale === "function"
-            ? nextZoomScale(currentZoomScale)
-            : nextZoomScale
-
-        return { documentKey, value }
+  const activeZoomState =
+    zoomState.documentKey === documentKey
+      ? zoomState
+      : {
+          documentKey,
+          level: resolvedDefaultZoomLevel,
+          resolvedZoom:
+            typeof resolvedDefaultZoomLevel === "number"
+              ? resolvedDefaultZoomLevel
+              : DEFAULT_ZOOM,
+        }
+  const setZoomLevel = React.useCallback(
+    (level: ViewerZoomLevel) => {
+      setZoomState({
+        documentKey,
+        level,
+        resolvedZoom:
+          typeof level === "number" ? level : activeZoomState.resolvedZoom,
       })
     },
-    [documentKey, resolvedDefaultZoomScale]
+    [activeZoomState.resolvedZoom, documentKey]
+  )
+  const handleZoomChange = React.useCallback(
+    (state: ViewerZoomState) => {
+      setZoomState({ documentKey, ...state })
+    },
+    [documentKey]
   )
   const [loadError, setLoadError] = React.useState<string>()
   const [isLoadingDocument, setIsLoadingDocument] = React.useState(true)
@@ -1263,9 +1279,8 @@ function DocxViewerContent({
       enabled: true,
       overscan: 1,
       scrollElement: viewportElement,
-      zoomScale: zoomScale / 100,
     }),
-    [viewportElement, zoomScale]
+    [viewportElement]
   )
   const handleDownload = React.useCallback(async () => {
     if (isPreparingDownload) return
@@ -1433,7 +1448,7 @@ function DocxViewerContent({
       if (!page) {
         const pageStridePx =
           (pageLayout.pageHeightPx + pageLayout.viewportDefaults.pageGapPx) *
-          (zoomScale / 100)
+          (activeZoomState.resolvedZoom / 100)
 
         viewport.scrollTo({
           top: Math.max(0, targetPageIndex * pageStridePx - 24),
@@ -1455,7 +1470,7 @@ function DocxViewerContent({
       pageLayout.pageHeightPx,
       pageLayout.viewportDefaults.pageGapPx,
       setActivePage,
-      zoomScale,
+      activeZoomState.resolvedZoom,
     ]
   )
 
@@ -1465,7 +1480,7 @@ function DocxViewerContent({
 
     if (!file) return
 
-    setZoomScale(resolvedDefaultZoomScale)
+    setZoomLevel(resolvedDefaultZoomLevel)
     setActivePage(1)
     setReportedPageCount(0)
     setUploadedDocxFile({
@@ -1503,14 +1518,15 @@ function DocxViewerContent({
           onToggleSidebar={() => setSidebarOpen((open) => !open)}
           onUploadClick={() => fileInputRef.current?.click()}
           pageCount={pageCount}
-          setZoomScale={setZoomScale}
+          onZoomChange={setZoomLevel}
           showComments={showComments}
           showDownloadButton={showDownload}
           showNightRenderToggle={shouldRenderNightMode}
           showTrackedChanges={showTrackedChanges}
           showUploadButton={showUpload}
           toolbarActions={toolbarActions}
-          zoomScale={zoomScale}
+          resolvedZoom={activeZoomState.resolvedZoom}
+          zoomLevel={activeZoomState.level}
         />
       ) : null}
       <div
@@ -1590,16 +1606,12 @@ function DocxViewerContent({
             loadingState
           ) : (
             <div className="flex min-h-full w-max min-w-full justify-center">
-              <div
-                className={cn(
-                  "origin-top",
-                  effectiveIsDark && "docx-night-reader-shell"
-                )}
-                style={{ zoom: zoomScale / 100 }}
-              >
+              <div className={cn(effectiveIsDark && "docx-night-reader-shell")}>
                 <DocxEditorViewer
                   editor={editor}
                   mode="read-only"
+                  zoom={activeZoomState.level}
+                  onZoomChange={handleZoomChange}
                   showTrackedChanges={showTrackedChanges}
                   renderTrackedChangeCard={renderTrackedChangeCard}
                   showComments={showComments}

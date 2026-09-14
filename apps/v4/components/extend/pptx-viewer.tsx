@@ -10,6 +10,8 @@ import {
   type PptxViewerController,
   type PptxViewerError,
   type PresentationSource,
+  type ViewerZoomLevel,
+  type ViewerZoomState,
 } from "@extend-ai/react-pptx"
 
 import "@extend-ai/react-pptx/styles.css"
@@ -63,6 +65,11 @@ const PPTX_SCROLL_TOP_EPSILON_PX = 24
 const PPTX_INSTANT_NAVIGATION_TIMEOUT_MS = 250
 const PPTX_SMOOTH_NAVIGATION_TIMEOUT_MS = 1_000
 const ZOOM_OPTIONS = [25, 50, 75, 100, 125, 150, 175, 200, 300, 400] as const
+const ZOOM_MODE_LABELS = {
+  "fit-page": "Fit page",
+  "fit-width": "Fit width",
+  automatic: "Automatic",
+} satisfies Record<Exclude<ViewerZoomLevel, number>, string>
 const PPTX_THUMBNAIL_FOCUS_RING_CLASS =
   "group-focus-visible/pptx-thumbnail-sidebar:ring-2 group-focus-visible/pptx-thumbnail-sidebar:ring-ring group-focus-visible/pptx-thumbnail-sidebar:ring-offset-1 group-focus-visible/pptx-thumbnail-sidebar:ring-offset-background"
 
@@ -151,6 +158,10 @@ function getNextZoom(currentZoom: number, direction: 1 | -1) {
   }
 
   return currentZoom
+}
+
+function isZoomMode(value: string): value is Exclude<ViewerZoomLevel, number> {
+  return value in ZOOM_MODE_LABELS
 }
 
 function useDelayedLoadingIndicator(isLoading: boolean, delayMs: number) {
@@ -379,12 +390,13 @@ function PptxToolbar({
   onSlideChange,
   onToggleSidebar,
   onUploadClick,
-  setZoom,
+  onZoomChange,
+  resolvedZoom,
   showDownloadButton,
   showUploadButton,
   slideCount,
   toolbarActions,
-  zoom,
+  zoomLevel,
 }: {
   activeSlideIndex: number
   controlsDisabled: boolean
@@ -393,19 +405,28 @@ function PptxToolbar({
   onSlideChange: (slideIndex: number) => void
   onToggleSidebar: () => void
   onUploadClick: () => void
-  setZoom: React.Dispatch<React.SetStateAction<number>>
+  onZoomChange: (zoomLevel: ViewerZoomLevel) => void
+  resolvedZoom: number
   showDownloadButton: boolean
   showUploadButton: boolean
   slideCount: number
   toolbarActions?: React.ReactNode
-  zoom: number
+  zoomLevel: ViewerZoomLevel
 }) {
   const canGoPrevious = !controlsDisabled && activeSlideIndex > 0
   const canGoNext =
     !controlsDisabled && slideCount > 0 && activeSlideIndex < slideCount - 1
-  const canZoomOut = !controlsDisabled && zoom > ZOOM_OPTIONS[0]
+  const canZoomOut = !controlsDisabled && resolvedZoom > ZOOM_OPTIONS[0]
   const canZoomIn =
-    !controlsDisabled && zoom < ZOOM_OPTIONS[ZOOM_OPTIONS.length - 1]
+    !controlsDisabled && resolvedZoom < ZOOM_OPTIONS[ZOOM_OPTIONS.length - 1]
+  const selectValue =
+    typeof zoomLevel === "number" ? zoomLevel.toString() : zoomLevel
+  const roundedZoom = Number(resolvedZoom.toFixed(2))
+  const zoomOptions = ZOOM_OPTIONS.includes(
+    roundedZoom as (typeof ZOOM_OPTIONS)[number]
+  )
+    ? ZOOM_OPTIONS
+    : [...ZOOM_OPTIONS, roundedZoom].sort((left, right) => left - right)
 
   return (
     <div className="flex min-h-12 flex-wrap items-center justify-between gap-2 border-b bg-background px-3 py-2">
@@ -485,9 +506,7 @@ function PptxToolbar({
                 size="icon-sm"
                 aria-label="Zoom out"
                 disabled={!canZoomOut}
-                onClick={() =>
-                  setZoom((currentZoom) => getNextZoom(currentZoom, -1))
-                }
+                onClick={() => onZoomChange(getNextZoom(resolvedZoom, -1))}
               >
                 <IconPlaceholder
                   lucide="CircleMinus"
@@ -500,20 +519,28 @@ function PptxToolbar({
               </Button>
             </ToolbarTooltip>
             <Select
-              value={zoom.toString()}
-              onValueChange={(value) => setZoom(Number(value))}
+              value={selectValue}
+              onValueChange={(value) => {
+                if (value === null) return
+                onZoomChange(isZoomMode(value) ? value : Number(value))
+              }}
               disabled={controlsDisabled}
               modal={false}
             >
               <SelectTrigger
                 size="sm"
-                className="w-[84px] min-w-[84px]"
+                className="w-[104px] min-w-[104px]"
                 aria-label="Zoom level"
               >
-                <SelectValue>{Math.round(zoom)}%</SelectValue>
+                <SelectValue>{Math.round(resolvedZoom)}%</SelectValue>
               </SelectTrigger>
               <SelectContent align="end" alignItemWithTrigger={false}>
-                {ZOOM_OPTIONS.map((value) => (
+                {Object.entries(ZOOM_MODE_LABELS).map(([value, label]) => (
+                  <SelectItem key={value} value={value}>
+                    {label}
+                  </SelectItem>
+                ))}
+                {zoomOptions.map((value) => (
                   <SelectItem key={value} value={value.toString()}>
                     {value}%
                   </SelectItem>
@@ -527,9 +554,7 @@ function PptxToolbar({
                 size="icon-sm"
                 aria-label="Zoom in"
                 disabled={!canZoomIn}
-                onClick={() =>
-                  setZoom((currentZoom) => getNextZoom(currentZoom, 1))
-                }
+                onClick={() => onZoomChange(getNextZoom(resolvedZoom, 1))}
               >
                 <IconPlaceholder
                   lucide="CirclePlusIcon"
@@ -902,7 +927,7 @@ function PptxThumbnailSidebarContent({
 export type PptxViewerPreviewProps = {
   className?: string
   defaultThumbnailSidebarOpen?: boolean
-  defaultZoom?: number
+  defaultZoom?: ViewerZoomLevel
   fileName?: string
   initialSlide?: number
   showDownload?: boolean
@@ -940,8 +965,9 @@ export function PptxViewerPreview({
   const [activeSlideIndex, setActiveSlideIndex] = React.useState(
     requestedInitialSlideIndex
   )
-  const [zoom, setZoom] = React.useState(() =>
-    Math.min(400, Math.max(10, Math.round(defaultZoom)))
+  const [zoomLevel, setZoomLevel] = React.useState(defaultZoom)
+  const [resolvedZoom, setResolvedZoom] = React.useState(() =>
+    typeof defaultZoom === "number" ? defaultZoom : DEFAULT_ZOOM
   )
   const [slideCount, setSlideCount] = React.useState(0)
   const [isLoading, setIsLoading] = React.useState(Boolean(src))
@@ -1010,7 +1036,10 @@ export function PptxViewerPreview({
   ) {
     setPreviousSource({ sourceIdentity, defaultZoom })
     setSlideCount(0)
-    setZoom(Math.min(400, Math.max(10, Math.round(defaultZoom))))
+    setZoomLevel(defaultZoom)
+    setResolvedZoom(
+      typeof defaultZoom === "number" ? defaultZoom : DEFAULT_ZOOM
+    )
     setLoadError(undefined)
     setIsLoading(Boolean(sourceIdentity))
   }
@@ -1200,6 +1229,11 @@ export function PptxViewerPreview({
     setIsLoading(false)
   }, [])
 
+  const handleZoomChange = React.useCallback((state: ViewerZoomState) => {
+    setZoomLevel(state.level)
+    setResolvedZoom(state.resolvedZoom)
+  }, [])
+
   const handleError = React.useCallback((error: PptxViewerError) => {
     setLoadError(error.message)
     setIsLoading(false)
@@ -1265,12 +1299,13 @@ export function PptxViewerPreview({
           onSlideChange={handleSlideChange}
           onToggleSidebar={() => setSidebarOpen((open) => !open)}
           onUploadClick={() => fileInputRef.current?.click()}
-          setZoom={setZoom}
+          onZoomChange={setZoomLevel}
+          resolvedZoom={resolvedZoom}
           showDownloadButton={showDownload}
           showUploadButton={showUpload}
           slideCount={slideCount}
           toolbarActions={toolbarActions}
-          zoom={zoom}
+          zoomLevel={zoomLevel}
         />
       ) : null}
       <div
@@ -1343,8 +1378,7 @@ export function PptxViewerPreview({
               source={source}
               mode="continuous"
               initialSlide={requestedInitialSlideIndex}
-              zoom={zoom}
-              fitMode="contain"
+              zoom={zoomLevel}
               height="100%"
               showToolbar={false}
               showThumbnails={false}
@@ -1375,6 +1409,7 @@ export function PptxViewerPreview({
               onReady={handleReady}
               onError={handleError}
               onSlideChange={handleViewerSlideChange}
+              onZoomChange={handleZoomChange}
             />
           )}
         </ScrollArea>

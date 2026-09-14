@@ -44,5 +44,10 @@ const pptxViewerUsageCode = `"use client";
 import { PptxViewerPreview } from "@/components/extend/pptx-viewer";
 
 export function PptxViewerExample() {
-  return <PptxViewerPreview src="/path/to/presentation.pptx" />;
+  return (
+    <PptxViewerPreview
+      src="/path/to/presentation.pptx"
+      defaultZoom="fit-width"
+    />
+  );
 }`

@@ -32,7 +32,7 @@ npx shadcn@latest add @extend/pptx-viewer
 <Step>Install the following dependencies:</Step>
 
 ```bash
-npm install @extend-ai/react-pptx@0.2.0 @tanstack/react-virtual@^3.13.12
+npm install @extend-ai/react-pptx@0.2.1 @tanstack/react-virtual@^3.13.12
 ```
 
 <Step>Install the icon library configured in your `components.json`:</Step>
@@ -64,6 +64,7 @@ prop for your library.
 - Virtualize large thumbnail rails and prefetch only nearby slide previews.
 - Scroll continuously through virtualized slides using the shared scroll area and custom scrollbar styling.
 - Collapse the shared thumbnail sidebar into an overlay on narrower viewer widths.
+- Switch between numeric, fit-page, fit-width, and automatic zoom levels.
 - Upload, download, jump to a slide number, and inject custom toolbar actions.
 
 ## API Reference
@@ -72,15 +73,15 @@ prop for your library.
 
 The `PptxViewerPreview` component wraps `@extend-ai/react-pptx` with the shared document-viewer sidebar, scroll area, header controls, upload, and download behavior.
 
-| Prop                          | Type              | Default | Required |
-| ----------------------------- | ----------------- | ------- | -------- |
-| `className`                   | `string`          | `-`     | No       |
-| `defaultThumbnailSidebarOpen` | `boolean`         | `false` | No       |
-| `defaultZoom`                 | `number`          | `100`   | No       |
-| `fileName`                    | `string`          | `-`     | No       |
-| `initialSlide`                | `number`          | `1`     | No       |
-| `showDownload`                | `boolean`         | `true`  | No       |
-| `showToolbar`                 | `boolean`         | `true`  | No       |
-| `showUpload`                  | `boolean`         | `true`  | No       |
-| `src`                         | `string`          | `-`     | No       |
-| `toolbarActions`              | `React.ReactNode` | `-`     | No       |
+| Prop                          | Type                                                 | Default | Required |
+| ----------------------------- | ---------------------------------------------------- | ------- | -------- |
+| `className`                   | `string`                                             | `-`     | No       |
+| `defaultThumbnailSidebarOpen` | `boolean`                                            | `false` | No       |
+| `defaultZoom`                 | `number \| "fit-page" \| "fit-width" \| "automatic"` | `100`   | No       |
+| `fileName`                    | `string`                                             | `-`     | No       |
+| `initialSlide`                | `number`                                             | `1`     | No       |
+| `showDownload`                | `boolean`                                            | `true`  | No       |
+| `showToolbar`                 | `boolean`                                            | `true`  | No       |
+| `showUpload`                  | `boolean`                                            | `true`  | No       |
+| `src`                         | `string`                                             | `-`     | No       |
+| `toolbarActions`              | `React.ReactNode`                                    | `-`     | No       |
