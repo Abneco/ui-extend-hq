@@ -63,7 +63,7 @@ prop for your library.
 
 ## Useful behaviors
 
-- Zoom, rotate, and download actions.
+- Numeric, fit-page, fit-width, and automatic zoom modes, plus rotate and download actions.
 - PDFium-backed page rendering for long PDFs.
 - Optional OCR block overlays, e-signature fields, search highlights, and page overlays.
 - Text selection, copy, search, and thumbnail navigation.
@@ -78,7 +78,7 @@ The PDFViewer component renders a scrollable PDF surface with toolbar controls, 
 | --------------------------- | ------------------------------------------------------------------------- | ------------------------------------------ | -------- |
 | `src`                       | `string`                                                                  | `-`                                        | No       |
 | `className`                 | `string`                                                                  | `-`                                        | No       |
-| `defaultZoom`               | `number`                                                                  | `1`                                        | No       |
+| `defaultZoom`               | `number \| "fit-page" \| "fit-width" \| "automatic"`                      | `1`                                        | No       |
 | `resolveScrollAreaViewport` | `(container: HTMLDivElement) => HTMLDivElement \| null`                   | Finds `[data-slot="scroll-area-viewport"]` | No       |
 | `showDownload`              | `boolean`                                                                 | `true`                                     | No       |
 | `showToolbar`               | `boolean`                                                                 | `true`                                     | No       |

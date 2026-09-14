@@ -57,7 +57,11 @@ import {
   ViewportElementContext,
   ViewportPluginPackage,
 } from "@embedpdf/plugin-viewport/react"
-import { useZoom, ZoomPluginPackage } from "@embedpdf/plugin-zoom/react"
+import {
+  useZoom,
+  ZoomMode,
+  ZoomPluginPackage,
+} from "@embedpdf/plugin-zoom/react"
 import { flushSync } from "react-dom"
 
 import { loadSharedPdfEngine } from "@/lib/pdf-thumbnail-utils"
@@ -121,9 +125,11 @@ export type PDFViewerScrollAreaViewportResolver = (
   container: HTMLDivElement
 ) => HTMLDivElement | null
 
+export type PDFViewerZoomLevel = number | "fit-page" | "fit-width" | "automatic"
+
 export type PDFViewerProps = {
   className?: string
-  defaultZoom?: number
+  defaultZoom?: PDFViewerZoomLevel
   fileName?: string
   resolveScrollAreaViewport?: PDFViewerScrollAreaViewportResolver
   showDownload?: boolean
@@ -174,6 +180,26 @@ const THUMBNAIL_FOCUS_RING_CLASS =
   "group-focus-visible/pdf-thumbnail-sidebar:ring-2 group-focus-visible/pdf-thumbnail-sidebar:ring-ring group-focus-visible/pdf-thumbnail-sidebar:ring-offset-1 group-focus-visible/pdf-thumbnail-sidebar:ring-offset-background"
 const DEFAULT_SCROLL_AREA_VIEWPORT_SELECTOR =
   '[data-slot="scroll-area-viewport"]'
+const ZOOM_MODE_LABELS: Record<ZoomMode, string> = {
+  [ZoomMode.FitPage]: "Fit page",
+  [ZoomMode.FitWidth]: "Fit width",
+  [ZoomMode.Automatic]: "Automatic",
+}
+
+function toZoomLevel(level: PDFViewerZoomLevel): ZoomMode | number {
+  if (level === "fit-page") return ZoomMode.FitPage
+  if (level === "fit-width") return ZoomMode.FitWidth
+  if (level === "automatic") return ZoomMode.Automatic
+  return level
+}
+
+function isZoomMode(value: unknown): value is ZoomMode {
+  return (
+    value === ZoomMode.FitPage ||
+    value === ZoomMode.FitWidth ||
+    value === ZoomMode.Automatic
+  )
+}
 
 function resolveDefaultScrollAreaViewport(container: HTMLDivElement) {
   return container.querySelector<HTMLDivElement>(
@@ -484,7 +510,7 @@ function PDFViewerFallbackShell({
   onUploadFile,
 }: {
   className?: string
-  defaultZoom: number
+  defaultZoom: PDFViewerZoomLevel
   errorMessage?: string
   showDownload: boolean
   showRotateControls: boolean
@@ -507,7 +533,10 @@ function PDFViewerFallbackShell({
         <PDFViewerToolbar
           activePage={1}
           controlsDisabled
-          currentZoomLevel={defaultZoom}
+          currentZoomLevel={
+            typeof defaultZoom === "number" ? defaultZoom : DEFAULT_ZOOM
+          }
+          zoomLevel={toZoomLevel(defaultZoom)}
           numPages={0}
           searchControl={
             <ToolbarTooltip label="Search text">
@@ -1048,6 +1077,7 @@ function PDFViewerToolbar({
   onToggleSidebar,
   onUploadFile,
   onZoomChange,
+  zoomLevel,
 }: {
   activePage: number
   controlsDisabled: boolean
@@ -1066,8 +1096,18 @@ function PDFViewerToolbar({
   onRotate: (direction: 1 | -1) => void
   onToggleSidebar: () => void
   onUploadFile?: (file: File) => void
-  onZoomChange: (zoomLevel: number) => void
+  onZoomChange: (zoomLevel: ZoomMode | number) => void
+  zoomLevel: ZoomMode | number
 }) {
+  const selectValue = isZoomMode(zoomLevel)
+    ? zoomLevel
+    : String(Number(currentZoomLevel.toFixed(2)))
+  const zoomOptions = ZOOM_OPTIONS.includes(Number(currentZoomLevel.toFixed(2)))
+    ? ZOOM_OPTIONS
+    : [...ZOOM_OPTIONS, Number(currentZoomLevel.toFixed(2))].sort(
+        (left, right) => left - right
+      )
+
   return (
     <div className="flex min-h-12 flex-wrap items-center justify-between gap-2 border-b bg-background px-3 py-2">
       <div className="flex min-w-0 flex-wrap items-center gap-2">
@@ -1184,18 +1224,30 @@ function PDFViewerToolbar({
               </Button>
             </ToolbarTooltip>
             <Select
-              value={String(currentZoomLevel)}
-              onValueChange={(value) => onZoomChange(Number(value))}
+              value={selectValue}
+              onValueChange={(value) => {
+                const next = String(value)
+                onZoomChange(isZoomMode(next) ? next : Number(next))
+              }}
               disabled={controlsDisabled}
               modal={false}
             >
-              <SelectTrigger size="sm" className="w-[84px] min-w-[84px]">
+              <SelectTrigger
+                size="sm"
+                className="w-[104px] min-w-[104px]"
+                aria-label="Zoom level"
+              >
                 <SelectValue placeholder="Zoom">
                   {Math.round(currentZoomLevel * 100)}%
                 </SelectValue>
               </SelectTrigger>
               <SelectContent alignItemWithTrigger={false}>
-                {ZOOM_OPTIONS.map((option) => (
+                {(Object.keys(ZOOM_MODE_LABELS) as ZoomMode[]).map((mode) => (
+                  <SelectItem key={mode} value={mode}>
+                    {ZOOM_MODE_LABELS[mode]}
+                  </SelectItem>
+                ))}
+                {zoomOptions.map((option) => (
                   <SelectItem key={option} value={String(option)}>
                     {Math.round(option * 100)}%
                   </SelectItem>
@@ -2172,7 +2224,7 @@ type PDFViewerInnerProps = {
   pdfFile: string
   documentId: string
   document: PdfDocumentObject | null
-  defaultZoom: number
+  defaultZoom: PDFViewerZoomLevel
   className?: string
   fileName?: string
   showDownload: boolean
@@ -2330,7 +2382,7 @@ function PDFViewerInner({
     if (initialZoomDocumentRef.current === documentId) return
 
     initialZoomDocumentRef.current = documentId
-    zoom.requestZoom(defaultZoom)
+    zoom.requestZoom(toZoomLevel(defaultZoom))
   }, [defaultZoom, documentId, pdfDocument, zoom])
 
   const scrollToPage = React.useCallback(
@@ -2663,6 +2715,7 @@ function PDFViewerInner({
           onToggleSidebar={() => setSidebarOpen((open) => !open)}
           onUploadFile={handleUpload}
           onZoomChange={(zoomLevel) => zoom?.requestZoom(zoomLevel)}
+          zoomLevel={zoomState.zoomLevel}
         />
       ) : null}
       <div
@@ -2887,7 +2940,7 @@ export const PDFViewer = React.forwardRef<PDFViewerHandle, PDFViewerProps>(
         scrollBehavior: "auto",
       }),
       createPluginRegistration(ZoomPluginPackage, {
-        defaultZoomLevel: defaultZoom,
+        defaultZoomLevel: toZoomLevel(defaultZoom),
         minZoom: ZOOM_OPTIONS[0],
         maxZoom: ZOOM_OPTIONS[ZOOM_OPTIONS.length - 1],
       }),
