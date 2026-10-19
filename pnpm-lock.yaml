@@ -8,6 +8,11 @@ overrides:
   '@types/react': 19.2.2
   '@types/react-dom': 19.2.2
 
+patchedDependencies:
+  '@extend-ai/react-docx@0.11.2':
+    hash: olzxvw7bsmbduaezq7u5ayhfs4
+    path: patches/@extend-ai__react-docx@0.11.2.patch
+
 importers:
 
   .:
@@ -125,7 +130,7 @@ importers:
         version: 2.15.0(preact@11.0.0-beta.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(svelte@5.56.3(@typescript-eslint/types@8.59.1))(vue@3.5.38(typescript@5.9.2))
       '@extend-ai/react-docx':
         specifier: 0.11.2
-        version: 0.11.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+        version: 0.11.2(patch_hash=olzxvw7bsmbduaezq7u5ayhfs4)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@extend-ai/react-pptx':
         specifier: 0.2.1
         version: 0.2.1(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -7628,7 +7633,7 @@ snapshots:
       '@eslint/core': 0.13.0
       levn: 0.4.1
 
-  '@extend-ai/react-docx@0.11.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
+  '@extend-ai/react-docx@0.11.2(patch_hash=olzxvw7bsmbduaezq7u5ayhfs4)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@chenglou/pretext': 0.0.8
       '@tanstack/react-virtual': 3.14.21(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
