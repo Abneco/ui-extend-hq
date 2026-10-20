@@ -15,15 +15,29 @@ import {
   useDocxViewerThumbnails,
   type DocxBorderContext,
   type DocxBorderPreset,
+  type DocxContextMenuRenderProps,
   type DocxDocumentTheme,
   type DocxEditorController,
   type ParagraphStyleDefinition,
 } from "@extend-ai/react-docx"
+import { createPortal } from "react-dom"
 
 import type { RegistryIconProps } from "@/lib/registry-icon-props"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { ColorPicker } from "@/components/ui/color-picker"
+import {
+  ContextMenu,
+  ContextMenuCheckboxItem,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuShortcut,
+  ContextMenuSub,
+  ContextMenuSubContent,
+  ContextMenuSubTrigger,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -65,6 +79,100 @@ import {
 } from "@/components/extend/docx-annotation-card"
 import { FileThumbnail } from "@/components/extend/file-thumbnail"
 import { IconPlaceholder } from "@/components/icon-placeholder"
+
+function DocxContextMenuItems({
+  actions,
+  runAction,
+}: Pick<DocxContextMenuRenderProps, "actions" | "runAction">) {
+  return actions.map((action, index) => {
+    const content = (
+      <>
+        {action.label}
+        {action.shortcut ? (
+          <ContextMenuShortcut>{action.shortcut}</ContextMenuShortcut>
+        ) : null}
+      </>
+    )
+    const children = action.children
+
+    return (
+      <React.Fragment key={action.id}>
+        {action.separatorBefore && index > 0 ? <ContextMenuSeparator /> : null}
+        {children?.length ? (
+          <ContextMenuSub>
+            <ContextMenuSubTrigger disabled={action.disabled}>
+              {content}
+            </ContextMenuSubTrigger>
+            <ContextMenuSubContent data-docx-context-menu="true">
+              <DocxContextMenuItems actions={children} runAction={runAction} />
+            </ContextMenuSubContent>
+          </ContextMenuSub>
+        ) : typeof action.checked === "boolean" ? (
+          <ContextMenuCheckboxItem
+            checked={action.checked}
+            disabled={action.disabled}
+            onClick={() => runAction(action.id)}
+          >
+            {content}
+          </ContextMenuCheckboxItem>
+        ) : (
+          <ContextMenuItem
+            disabled={action.disabled}
+            variant={action.destructive ? "destructive" : "default"}
+            onClick={() => runAction(action.id)}
+          >
+            {content}
+          </ContextMenuItem>
+        )}
+      </React.Fragment>
+    )
+  })
+}
+
+function DocxEditorContextMenu({
+  actions,
+  runAction,
+  closeMenu,
+  position,
+}: DocxContextMenuRenderProps) {
+  const triggerRef = React.useRef<HTMLDivElement>(null)
+
+  React.useEffect(() => {
+    triggerRef.current?.dispatchEvent(
+      new MouseEvent("contextmenu", {
+        bubbles: true,
+        cancelable: true,
+        button: 2,
+        clientX: position.x,
+        clientY: position.y,
+      })
+    )
+  }, [position.x, position.y])
+
+  return createPortal(
+    <ContextMenu onOpenChange={(open) => !open && closeMenu()}>
+      <ContextMenuTrigger
+        ref={triggerRef}
+        aria-hidden="true"
+        data-docx-context-menu="true"
+        className="pointer-events-none fixed size-px opacity-0"
+        style={{ left: position.x, top: position.y }}
+      />
+      <ContextMenuContent
+        aria-label="Document actions"
+        data-docx-context-menu="true"
+        className="min-w-56"
+      >
+        <DocxContextMenuItems actions={actions} runAction={runAction} />
+      </ContextMenuContent>
+    </ContextMenu>,
+    document.body
+  )
+}
+
+function renderDocxContextMenu(props: DocxContextMenuRenderProps) {
+  return <DocxEditorContextMenu {...props} />
+}
 
 function ArrowExpandDiagonal01Glyph(props: RegistryIconProps) {
   return (
@@ -2289,6 +2397,7 @@ function DocxEditorContent({
                   renderTrackedChangeCard={renderTrackedChangeCard}
                   showComments={editor.showComments}
                   renderCommentCard={renderCommentCard}
+                  renderContextMenu={renderDocxContextMenu}
                   loadingState={loadingState}
                   pageBackgroundColor={
                     editor.documentTheme === "dark" ? "#0a0a0a" : undefined

@@ -51,7 +51,7 @@ prop for your library.
 </Step>
 
 ```bash
-npx shadcn@latest add @extend/file-thumbnail @extend/toggle
+npx shadcn@latest add @extend/file-thumbnail @extend/toggle context-menu
 ```
 
 <Step>Copy and paste the following code into your project.</Step>
@@ -69,6 +69,7 @@ npx shadcn@latest add @extend/file-thumbnail @extend/toggle
 ## Useful behaviors
 
 - Toolbar controls cover import, export, undo, redo, zoom, theme, read-only mode, tracked changes, text styles, color, highlight, links, alignment, lists, borders, images, and tables.
+- Right-click menus use your local `@/components/ui/context-menu` components, including nested image actions, checked options, keyboard shortcuts, and destructive table commands. Customize that component to match your application.
 - Page thumbnails stay in the left rail and scroll the editor viewport to the selected page.
 - The editor uses `useDocxEditor` and `DocxEditorViewer`, so mutations flow through the public `react-docx` controller API.
 - Uploaded files replace the current document while URL-loaded DOCX files are fetched from the provided `src`.
