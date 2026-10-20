@@ -55,8 +55,8 @@ function ContextMenuContent({
   className,
   side = "bottom",
   sideOffset = 4,
-  align = "start",
-  alignOffset = 0,
+  align = "center",
+  alignOffset,
   anchor,
   portalProps,
   children,
@@ -75,21 +75,21 @@ function ContextMenuContent({
         align={align}
         alignOffset={alignOffset}
         anchor={anchor}
-        className="z-50 h-(--positioner-height) w-(--positioner-width) max-w-(--available-width) transition-[top,left,right,bottom,transform] data-instant:transition-none"
+        className="z-50"
         data-slot="context-menu-positioner"
         side={side}
         sideOffset={sideOffset}
       >
         <ContextMenuPrimitive.Popup
           className={cn(
-            "relative flex h-(--popup-height,auto) w-(--popup-width,auto) min-w-32 origin-(--transform-origin) rounded-lg border bg-popover text-popover-foreground shadow-lg/5 transition-[width,height,scale,opacity] outline-none not-dark:bg-clip-padding before:pointer-events-none before:absolute before:inset-0 before:rounded-[calc(var(--radius-lg)-1px)] before:shadow-[0_1px_--theme(--color-black/4%)] data-ending-style:scale-98 data-ending-style:opacity-0 data-starting-style:scale-98 data-starting-style:opacity-0 dark:before:shadow-[0_-1px_--theme(--color-white/6%)]",
+            "relative flex origin-(--transform-origin) rounded-lg border bg-popover shadow-lg/5 outline-none not-dark:bg-clip-padding not-[class*='w-']:min-w-32 before:pointer-events-none before:absolute before:inset-0 before:rounded-[calc(var(--radius-lg)-1px)] before:shadow-[0_1px_--theme(--color-black/4%)] focus:outline-none dark:before:shadow-[0_-1px_--theme(--color-white/6%)]",
             className
           )}
           data-slot="context-menu-content"
           {...props}
         >
           <div
-            className="relative size-full max-h-(--available-height) overflow-y-auto p-1 data-instant:transition-none"
+            className="max-h-(--available-height) w-full overflow-y-auto p-1"
             data-slot="context-menu-viewport"
           >
             {children}
@@ -124,7 +124,7 @@ function ContextMenuItem({
   return (
     <ContextMenuPrimitive.Item
       className={cn(
-        "relative flex min-h-8 cursor-default items-center gap-2 rounded-sm px-2 py-1 text-base outline-none select-none data-highlighted:bg-accent data-highlighted:text-accent-foreground data-[inset=true]:ps-8 data-[variant=destructive]:text-destructive-foreground sm:min-h-7 sm:text-sm data-disabled:pointer-events-none data-disabled:opacity-64 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4.5 sm:[&_svg:not([class*='size-'])]:size-4",
+        "flex min-h-8 cursor-default items-center gap-2 rounded-sm px-2 py-1 text-base text-foreground outline-none select-none data-highlighted:bg-accent data-highlighted:text-accent-foreground data-inset:ps-8 data-[variant=destructive]:text-destructive-foreground sm:min-h-7 sm:text-sm data-disabled:pointer-events-none data-disabled:opacity-64 [&>svg]:pointer-events-none [&>svg]:-mx-0.5 [&>svg]:shrink-0 [&>svg:not([class*='opacity-'])]:opacity-80 [&>svg:not([class*='size-'])]:size-4.5 sm:[&>svg:not([class*='size-'])]:size-4",
         className
       )}
       data-inset={inset}
@@ -240,7 +240,7 @@ function ContextMenuLabel({
   return (
     <ContextMenuPrimitive.GroupLabel
       className={cn(
-        "px-2 py-1.5 text-xs font-medium text-muted-foreground data-[inset=true]:ps-8",
+        "px-2 py-1.5 text-xs font-medium text-muted-foreground data-inset:ps-9 sm:data-inset:ps-8",
         className
       )}
       data-inset={inset}
@@ -266,11 +266,11 @@ function ContextMenuSeparator({
 function ContextMenuShortcut({
   className,
   ...props
-}: React.ComponentProps<"span">): React.ReactElement {
+}: React.ComponentProps<"kbd">): React.ReactElement {
   return (
-    <span
+    <kbd
       className={cn(
-        "ms-auto text-xs font-medium text-muted-foreground",
+        "ms-auto font-sans text-xs font-medium tracking-widest text-muted-foreground/72",
         className
       )}
       data-slot="context-menu-shortcut"
@@ -298,7 +298,7 @@ function ContextMenuSubTrigger({
   return (
     <ContextMenuPrimitive.SubmenuTrigger
       className={cn(
-        "flex min-h-8 cursor-default items-center gap-2 rounded-sm px-2 py-1 text-base outline-none select-none data-highlighted:bg-accent data-highlighted:text-accent-foreground data-popup-open:bg-accent data-[inset=true]:ps-8 sm:min-h-7 sm:text-sm [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4.5 sm:[&_svg:not([class*='size-'])]:size-4",
+        "flex min-h-8 items-center gap-2 rounded-sm px-2 py-1 text-base text-foreground outline-none data-highlighted:bg-accent data-highlighted:text-accent-foreground data-inset:ps-8 data-popup-open:bg-accent data-popup-open:text-accent-foreground sm:min-h-7 sm:text-sm data-disabled:pointer-events-none data-disabled:opacity-64 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4.5 sm:[&_svg:not([class*='size-'])]:size-4 [&>svg:not(:last-child)]:-mx-0.5",
         className
       )}
       data-inset={inset}
@@ -307,12 +307,12 @@ function ContextMenuSubTrigger({
     >
       {children}
       <IconPlaceholder
-        lucide="ArrowRight"
-        tabler="IconArrowRight"
+        lucide="ChevronRight"
+        tabler="IconChevronRight"
         hugeicons="ArrowRight01Icon"
-        phosphor="ArrowRightIcon"
-        remixicon="RiArrowRightLine"
-        className="ms-auto size-4"
+        phosphor="CaretRightIcon"
+        remixicon="RiArrowRightSLine"
+        className="ms-auto -me-0.5 opacity-80"
       />
     </ContextMenuPrimitive.SubmenuTrigger>
   )
@@ -323,9 +323,10 @@ function ContextMenuSubContent(
 ): React.ReactElement {
   return (
     <ContextMenuContent
-      side="right"
+      side="inline-end"
       sideOffset={0}
-      alignOffset={-4}
+      align="start"
+      alignOffset={-5}
       {...props}
     />
   )

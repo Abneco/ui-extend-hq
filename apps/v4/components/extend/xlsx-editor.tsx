@@ -51,9 +51,12 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import {
+  renderXlsxContextMenu,
   renderXlsxScroller,
   WorkbookSheetTabs,
   WorkbookTableHeaderMenu,
+  XLSX_CONTEXT_MENU_CLASS_NAME,
+  xlsxContextMenuStyle,
 } from "@/components/extend/xlsx-viewer"
 import { IconPlaceholder } from "@/components/icon-placeholder"
 
@@ -2469,6 +2472,9 @@ export function XlsxEditorSurface({
                 {error?.message ?? "Unable to edit workbook."}
               </div>
             }
+            contextMenuClassName={XLSX_CONTEXT_MENU_CLASS_NAME}
+            contextMenuStyle={xlsxContextMenuStyle}
+            renderContextMenu={renderXlsxContextMenu}
             renderTableHeaderMenu={renderTableHeaderMenu}
           />
         </div>

@@ -34,6 +34,7 @@ type DemoSource = {
   /** Thumbnail aspect ratio; images use their natural ratio. */
   previewAspectRatio?: number
   size: number
+  staticThumbnailUrl?: string
   thumbnail: DemoThumbnailKind
   updatedAt: string
   url: string
@@ -47,6 +48,7 @@ const DEMO_SOURCES: DemoSource[] = [
     size: 2215244,
     thumbnail: "pdf",
     updatedAt: "2026-03-24T21:43:00Z",
+    staticThumbnailUrl: withUiBasePath("/samples/thumbnails/attention.png"),
     url: withUiBasePath("/samples/attention.pdf"),
   },
   {
@@ -56,6 +58,7 @@ const DEMO_SOURCES: DemoSource[] = [
     size: 842419,
     thumbnail: "pdf",
     updatedAt: "2026-02-03T19:11:00Z",
+    staticThumbnailUrl: withUiBasePath("/samples/thumbnails/knicks.png"),
     url: withUiBasePath("/samples/knicks.pdf"),
   },
   {
@@ -65,6 +68,9 @@ const DEMO_SOURCES: DemoSource[] = [
     size: 39248,
     thumbnail: "pdf",
     updatedAt: "2026-04-05T21:56:00Z",
+    staticThumbnailUrl: withUiBasePath(
+      "/samples/thumbnails/loan-application.png"
+    ),
     url: withUiBasePath("/samples/loan-application.pdf"),
   },
   {
@@ -76,6 +82,7 @@ const DEMO_SOURCES: DemoSource[] = [
     // the thumbnail is generated client-side like the PDFs.
     thumbnail: "docx",
     updatedAt: "2026-03-24T17:43:00Z",
+    staticThumbnailUrl: withUiBasePath("/samples/thumbnails/demo.png"),
     url: withUiBasePath("/samples/demo.docx"),
   },
   {
@@ -86,6 +93,9 @@ const DEMO_SOURCES: DemoSource[] = [
     size: 66655,
     thumbnail: "xlsx",
     updatedAt: "2026-02-24T08:52:48Z",
+    staticThumbnailUrl: withUiBasePath(
+      "/samples/thumbnails/crazy-chart-zoo.png"
+    ),
     url: withUiBasePath("/samples/crazy-chart-zoo.xlsx"),
   },
   {
@@ -96,6 +106,9 @@ const DEMO_SOURCES: DemoSource[] = [
     size: 8840652,
     thumbnail: "pptx",
     updatedAt: "2026-07-16T17:31:45Z",
+    staticThumbnailUrl: withUiBasePath(
+      "/samples/thumbnails/consulting-proposal.png"
+    ),
     url: withUiBasePath("/samples/demo.pptx"),
   },
   {
@@ -125,6 +138,9 @@ const DEMO_SOURCES: DemoSource[] = [
     size: 80096,
     thumbnail: "pdf",
     updatedAt: "2026-04-05T21:57:02Z",
+    staticThumbnailUrl: withUiBasePath(
+      "/samples/thumbnails/bank-statement.png"
+    ),
     url: withUiBasePath("/samples/bank-statement-x4uhhi7t.pdf"),
   },
 ]
@@ -305,7 +321,9 @@ type DemoThumbnails = {
 // a hidden DOCX import + pagination, XLSX sheet paints).
 const demoThumbnailCache = new Map<string, DemoThumbnails>()
 
-export function useFileSystemDemoItems() {
+export function useFileSystemDemoItems({
+  staticThumbnails = false,
+}: { staticThumbnails?: boolean } = {}) {
   const [thumbnails, setThumbnails] = React.useState<
     Record<string, DemoThumbnails>
   >(() => Object.fromEntries(demoThumbnailCache))
@@ -345,8 +363,12 @@ export function useFileSystemDemoItems() {
           previewImageUrls:
             source.thumbnail === "url"
               ? [source.url]
-              : (thumbnails[source.path]?.urls ?? null),
-          previewPageCount: thumbnails[source.path]?.pageCount,
+              : staticThumbnails && source.staticThumbnailUrl
+                ? [source.staticThumbnailUrl]
+                : (thumbnails[source.path]?.urls ?? null),
+          previewPageCount: staticThumbnails
+            ? undefined
+            : thumbnails[source.path]?.pageCount,
           size: source.size,
           updatedAt: source.updatedAt,
           url: source.url,
@@ -354,7 +376,7 @@ export function useFileSystemDemoItems() {
       }),
       ...AURORA_ITEMS,
     ],
-    [thumbnails]
+    [thumbnails, staticThumbnails]
   )
 
   // Document previews render on demand and are memoized per page so revisiting
@@ -404,7 +426,7 @@ export function useFileSystemDemoItems() {
     []
   )
 
-  const thumbnailGenerators = (
+  const thumbnailGenerators = !staticThumbnails && (
     <>
       {DEMO_SOURCES.filter(
         (source) => source.thumbnail === "pdf" && !thumbnails[source.path]
@@ -484,12 +506,14 @@ export function FileSystemDemo() {
 export function FileSystemFinderBlock({
   defaultView,
   heightClassName = "h-[680px]",
+  staticThumbnails = false,
 }: {
   defaultView?: FileSystemProps["defaultView"]
   heightClassName?: string
+  staticThumbnails?: boolean
 }) {
   const { items, loadPreviewImageUrl, thumbnailGenerators } =
-    useFileSystemDemoItems()
+    useFileSystemDemoItems({ staticThumbnails })
 
   return (
     <div className="flex h-full min-h-0 bg-background">

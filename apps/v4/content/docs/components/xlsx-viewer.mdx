@@ -36,7 +36,7 @@ npx shadcn@latest add @extend/xlsx-viewer
 <Step>Install the following dependencies:</Step>
 
 ```bash
-npm install @extend-ai/react-xlsx@0.17.3
+npm install @extend-ai/react-xlsx@0.18.0
 ```
 
 <Step>Install the icon library configured in your `components.json`:</Step>
@@ -48,6 +48,14 @@ replaces each placeholder with the matching icon from your configured library,
 so make sure that library's package is installed. When copying the source
 manually, replace each `IconPlaceholder` element with the icon named by the
 prop for your library.
+
+<Step>
+  Install the Context Menu primitive for separators and keyboard shortcuts:
+</Step>
+
+```bash
+npx shadcn@latest add context-menu
+```
 
 <Step>Copy and paste the following code into your project.</Step>
 
@@ -66,6 +74,7 @@ prop for your library.
 - Sheet tabs, grid virtualization, column resizing, and frozen rows or columns.
 - Formula/value display modes and formatted cell rendering.
 - Search across sheets and cell ranges.
+- Right-click cells or headers for Copy and selection commands, or press Shift+F10 at the active cell.
 - Optional metadata for workbook properties, hidden sheets, and named ranges.
 
 ## API Reference

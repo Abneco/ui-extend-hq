@@ -1,6 +1,5 @@
 "use client"
 
-import Link from "next/link"
 import { usePathname } from "next/navigation"
 
 import { showMcpDocs } from "@/lib/flags"
@@ -18,6 +17,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import { IntentLink as Link } from "@/components/intent-link"
 
 const TOP_LEVEL_SECTIONS = [
   { name: "Introduction", href: "/docs" },

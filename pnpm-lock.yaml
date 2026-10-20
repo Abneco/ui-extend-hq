@@ -135,8 +135,8 @@ importers:
         specifier: 0.2.1
         version: 0.2.1(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@extend-ai/react-xlsx':
-        specifier: 0.17.3
-        version: 0.17.3(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+        specifier: 0.18.0
+        version: 0.18.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@glideapps/glide-data-grid':
         specifier: 6.0.4-alpha24
         version: 6.0.4-alpha24(lodash@4.18.1)(marked@16.4.2)(react-dom@19.2.3(react@19.2.3))(react-responsive-carousel@3.2.23)(react@19.2.3)
@@ -1492,8 +1492,8 @@ packages:
       react: '>=18.2 <20'
       react-dom: '>=18.2 <20'
 
-  '@extend-ai/react-xlsx@0.17.3':
-    resolution: {integrity: sha512-m0GviUtlyr6YkzYnPFreMIISQR9EwOiOnFymDv4YtLqmBy7qiJTHeCer8sMBX8HNMF9LwId7l/umBqjW3ywHjQ==}
+  '@extend-ai/react-xlsx@0.18.0':
+    resolution: {integrity: sha512-Ju+FjTnjlHcQ1P4uP6IB+eeYTbbLllfYWV5f6+bW5LITvMc34e8HGc0UgqiRqTcehwqIs4h0XYzP3sgnlxscog==}
     peerDependencies:
       react: '>=18'
       react-dom: '>=18'
@@ -7655,7 +7655,7 @@ snapshots:
       regl: 2.1.1
       topojson-client: 3.1.0
 
-  '@extend-ai/react-xlsx@0.17.3(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
+  '@extend-ai/react-xlsx@0.18.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@dukelib/sheets-wasm': 0.1.23
       '@tanstack/react-virtual': 3.13.26(react-dom@19.2.3(react@19.2.3))(react@19.2.3)

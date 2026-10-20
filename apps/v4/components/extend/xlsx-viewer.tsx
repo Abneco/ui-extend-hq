@@ -9,6 +9,7 @@ import {
   XlsxViewer,
   XlsxViewerProvider,
   type XlsxCellAddress,
+  type XlsxContextMenuRenderProps,
   type XlsxScrollerRenderProps,
   type XlsxSheetData,
   type XlsxTableHeaderMenuRenderProps,
@@ -18,6 +19,10 @@ import { createPortal } from "react-dom"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import {
+  ContextMenuSeparator,
+  ContextMenuShortcut,
+} from "@/components/ui/context-menu"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -52,6 +57,65 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { IconPlaceholder } from "@/components/icon-placeholder"
+
+export const XLSX_CONTEXT_MENU_CLASS_NAME =
+  "origin-(--transform-origin) rounded-lg border bg-popover text-popover-foreground shadow-lg/5 outline-none not-dark:bg-clip-padding before:pointer-events-none before:absolute before:inset-0 before:rounded-[calc(var(--radius-lg)-1px)] before:shadow-[0_1px_--theme(--color-black/4%)] dark:before:shadow-[0_-1px_--theme(--color-white/6%)]"
+
+export const xlsxContextMenuStyle = {
+  background: "var(--popover)",
+  border: "1px solid var(--border)",
+  borderRadius: "var(--radius-lg, var(--radius))",
+  boxShadow: "var(--tw-shadow)",
+  color: "var(--popover-foreground)",
+  font: "inherit",
+  minWidth: "min(14rem, calc(100vw - 16px))",
+  padding: 0,
+} satisfies NonNullable<
+  React.ComponentProps<typeof XlsxViewer>["contextMenuStyle"]
+>
+
+export function renderXlsxContextMenu({
+  actions,
+  runAction,
+  busy,
+}: XlsxContextMenuRenderProps) {
+  return (
+    <div className="p-1">
+      {actions.map((action, index) => (
+        <React.Fragment key={action.id}>
+          {action.separatorBefore && index > 0 ? (
+            <ContextMenuSeparator />
+          ) : null}
+          <button
+            type="button"
+            role="menuitem"
+            tabIndex={-1}
+            disabled={busy || action.disabled}
+            data-action={action.id}
+            className={cn(
+              "flex min-h-8 w-full cursor-default items-center gap-2 rounded-sm px-2 py-1 text-left text-base text-foreground outline-none select-none hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground disabled:pointer-events-none disabled:opacity-64 sm:min-h-7 sm:text-sm",
+              action.destructive && "text-destructive-foreground"
+            )}
+            onPointerMove={(event) =>
+              event.currentTarget.focus({ preventScroll: true })
+            }
+            onClick={(event) => {
+              event.currentTarget
+                .closest<HTMLElement>('[role="menu"]')
+                ?.focus({ preventScroll: true })
+              void runAction(action.id)
+            }}
+          >
+            {action.label}
+            {action.shortcut ? (
+              <ContextMenuShortcut>{action.shortcut}</ContextMenuShortcut>
+            ) : null}
+          </button>
+        </React.Fragment>
+      ))}
+    </div>
+  )
+}
 
 const XLSX_LOADING_INDICATOR_DELAY_MS = 300
 const XLSX_DROPDOWN_Z_INDEX_CLASS = "z-40"
@@ -1444,6 +1508,9 @@ export function XlsxWorkbookSurface({
                 {error?.message ?? "Unable to display workbook."}
               </div>
             }
+            contextMenuClassName={XLSX_CONTEXT_MENU_CLASS_NAME}
+            contextMenuStyle={xlsxContextMenuStyle}
+            renderContextMenu={renderXlsxContextMenu}
             renderTableHeaderMenu={renderTableHeaderMenu}
           />
         </div>

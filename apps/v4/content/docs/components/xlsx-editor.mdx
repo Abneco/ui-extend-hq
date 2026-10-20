@@ -32,7 +32,7 @@ npx shadcn@latest add @extend/xlsx-editor
 <Step>Install the following dependencies:</Step>
 
 ```bash
-npm install @base-ui/react@^1.4.1 @extend-ai/react-xlsx@0.17.3 class-variance-authority@^0.7.1
+npm install @base-ui/react@^1.4.1 @extend-ai/react-xlsx@0.18.0 class-variance-authority@^0.7.1
 ```
 
 <Step>Install the icon library configured in your `components.json`:</Step>
@@ -52,7 +52,7 @@ prop for your library.
 </Step>
 
 ```bash
-npx shadcn@latest add @extend/xlsx-viewer @extend/group @extend/color-picker @extend/toggle
+npx shadcn@latest add @extend/xlsx-viewer @extend/group @extend/color-picker @extend/toggle context-menu
 ```
 
 <Step>Copy and paste the following code into your project.</Step>
@@ -72,6 +72,7 @@ npx shadcn@latest add @extend/xlsx-viewer @extend/group @extend/color-picker @ex
 - Formula bar shows the selected cell's formula, or its display value when no formula is present.
 - Font family, font size, font effects, text color, fill color, borders, alignment, wrapping, shrink-to-fit, and number formats use persisted `react-xlsx` cell style APIs.
 - Undo, redo, merge, unmerge, sheet add/remove, and export are wired through `react-xlsx` editing APIs.
+- Right-click cells or headers for clipboard, editing, selection, merge, and table-sort commands. Shift+F10 opens the same menu from the keyboard; failed commands keep their error visible.
 - Sheet tabs, workbook loading, upload, zoom, table sorting, and dark workbook rendering match the Excel Viewer.
 - Large workbooks automatically fall back to read-only behavior above the editor threshold.
 

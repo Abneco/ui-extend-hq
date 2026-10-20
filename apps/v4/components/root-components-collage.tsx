@@ -63,7 +63,6 @@ export function MobileRootPreview() {
         height={1114}
         alt="Document component previews"
         className="block h-auto w-[160vw] max-w-none dark:hidden"
-        priority
         sizes="150vw"
       />
       <Image
@@ -72,7 +71,6 @@ export function MobileRootPreview() {
         height={1114}
         alt="Document component previews"
         className="hidden w-[160vw] max-w-none dark:block"
-        priority
         sizes="150vw"
       />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-linear-to-t from-background from-15% via-background/85 via-45% to-transparent" />
@@ -171,7 +169,11 @@ function FileSystemTile({ mountPreview }: TileProps) {
       className="h-[560px] bg-background"
     >
       {mountPreview && (
-        <FileSystemBlock defaultView="gallery" heightClassName="h-full" />
+        <FileSystemBlock
+          defaultView="gallery"
+          heightClassName="h-full"
+          staticThumbnails
+        />
       )}
     </ComponentCrop>
   )
@@ -263,8 +265,34 @@ function ComponentCrop({
   viewHref: string
   children: React.ReactNode
 }) {
+  const containerRef = React.useRef<HTMLDivElement>(null)
+  const [visible, setVisible] = React.useState(false)
+
+  React.useEffect(() => {
+    const container = containerRef.current
+    if (!container) return
+    if (!("IntersectionObserver" in window)) {
+      const frame = requestAnimationFrame(() => setVisible(true))
+      return () => cancelAnimationFrame(frame)
+    }
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true)
+          observer.disconnect()
+        }
+      },
+      { rootMargin: "100px" }
+    )
+    observer.observe(container)
+    return () => observer.disconnect()
+  }, [])
+
   return (
-    <div className="overflow-hidden rounded-lg border bg-background">
+    <div
+      ref={containerRef}
+      className="overflow-hidden rounded-lg border bg-background"
+    >
       <div className="flex h-8 items-center justify-between gap-2 rounded-t-[inherit] border-b bg-muted/45 px-3 text-xs font-medium text-muted-foreground">
         <span className="min-w-0 truncate">{label}</span>
         <Button
@@ -277,7 +305,9 @@ function ComponentCrop({
           <HugeiconsIcon icon={ArrowRight01Icon} className="size-3" />
         </Button>
       </div>
-      <div className={cn("overflow-hidden", className)}>{children}</div>
+      <div className={cn("overflow-hidden", className)}>
+        {visible ? children : null}
+      </div>
     </div>
   )
 }
