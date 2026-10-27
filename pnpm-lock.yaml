@@ -9,9 +9,9 @@ overrides:
   '@types/react-dom': 19.2.2
 
 patchedDependencies:
-  '@extend-ai/react-docx@0.11.2':
-    hash: olzxvw7bsmbduaezq7u5ayhfs4
-    path: patches/@extend-ai__react-docx@0.11.2.patch
+  '@extend-ai/react-docx@0.12.0':
+    hash: 6jpfdezkpalcaczkxwnedel2hi
+    path: patches/@extend-ai__react-docx@0.12.0.patch
 
 importers:
 
@@ -129,14 +129,14 @@ importers:
         specifier: 2.15.0
         version: 2.15.0(preact@11.0.0-beta.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(svelte@5.56.3(@typescript-eslint/types@8.59.1))(vue@3.5.38(typescript@5.9.2))
       '@extend-ai/react-docx':
-        specifier: 0.11.2
-        version: 0.11.2(patch_hash=olzxvw7bsmbduaezq7u5ayhfs4)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+        specifier: 0.12.0
+        version: 0.12.0(patch_hash=6jpfdezkpalcaczkxwnedel2hi)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@extend-ai/react-pptx':
         specifier: 0.2.1
         version: 0.2.1(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@extend-ai/react-xlsx':
-        specifier: 0.18.0
-        version: 0.18.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+        specifier: 0.19.0
+        version: 0.19.0(preact-render-to-string@6.6.5(preact@11.0.0-beta.0))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@glideapps/glide-data-grid':
         specifier: 6.0.4-alpha24
         version: 6.0.4-alpha24(lodash@4.18.1)(marked@16.4.2)(react-dom@19.2.3(react@19.2.3))(react-responsive-carousel@3.2.23)(react@19.2.3)
@@ -1480,11 +1480,16 @@ packages:
     resolution: {integrity: sha512-ZAoA40rNMPwSm+AeHpCq8STiNAwzWLJuP8Xv4CHIc9wv/PSuExjMrmjfYNj682vW0OOiZ1HKxzvjQr9XZIisQA==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
-  '@extend-ai/react-docx@0.11.2':
-    resolution: {integrity: sha512-97slHKO9o83R/YCAu8YzKbwE+sBQRoMx2duBQCaHUHF8ou5QrtsoYU3hRQvMs59DqzcISWyxMsgtT4s+RjP/zQ==}
+  '@extend-ai/react-docx@0.12.0':
+    resolution: {integrity: sha512-PbapIQrN2naad7D6yHJV7v7UDcvfupfisHJMU5Mo/ZSQpTPGr4kIWuK09nRmaSDl7fdfbz+z1mj/SBdC6GlBMA==}
     peerDependencies:
       react: '>=18'
       react-dom: '>=18'
+    peerDependenciesMeta:
+      react:
+        optional: true
+      react-dom:
+        optional: true
 
   '@extend-ai/react-pptx@0.2.1':
     resolution: {integrity: sha512-N5XfCGLfdvwY2LRnTz7m4p5gi7nOYgdNnSudB/yPYSjjpBquN9d6nIDcNB/hojMxZwJJRLNR0Ayp8puRjh+heA==}
@@ -1492,11 +1497,16 @@ packages:
       react: '>=18.2 <20'
       react-dom: '>=18.2 <20'
 
-  '@extend-ai/react-xlsx@0.18.0':
-    resolution: {integrity: sha512-Ju+FjTnjlHcQ1P4uP6IB+eeYTbbLllfYWV5f6+bW5LITvMc34e8HGc0UgqiRqTcehwqIs4h0XYzP3sgnlxscog==}
+  '@extend-ai/react-xlsx@0.19.0':
+    resolution: {integrity: sha512-PTDY1Ht/3UtUb+zIllWrvCFqHKjyhUr2pxYrAsFZpKazQwMo5US1n667rdKhu5w3A0j7ZYDNr+BCBjvNu2XF9g==}
     peerDependencies:
       react: '>=18'
       react-dom: '>=18'
+    peerDependenciesMeta:
+      react:
+        optional: true
+      react-dom:
+        optional: true
 
   '@floating-ui/core@1.7.5':
     resolution: {integrity: sha512-1Ih4WTWyw0+lKyFMcBHGbb5U5FtuHJuujoyyr5zTaWS5EYMeT6Jb2AuDeftsCsEuchO+mM2ij5+q9crhydzLhQ==}
@@ -3134,17 +3144,8 @@ packages:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
       react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
-  '@tanstack/react-virtual@3.14.21':
-    resolution: {integrity: sha512-wWE/ZJDNNDp18JHWy7n5PQooqerHePVkEEu6Op0twKQ2InF9DPhYMQptQY0syDEviMd3/r8D0OUvKJibDGm9HQ==}
-    peerDependencies:
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-
   '@tanstack/virtual-core@3.16.0':
     resolution: {integrity: sha512-Er2N7q3WOiH6y2JLxsxNX+u2/sLqSsL0bxFgDjuiPiA7vKhZRm+IzcS17vRee3GNXr64UsesA5CAp9yTiIYw9A==}
-
-  '@tanstack/virtual-core@3.19.6':
-    resolution: {integrity: sha512-CsTW892z23gy7IyxYTTorVu1uZWB+0N349rSMgKz4rFLPpLza7F7TpcCKeI5iUAwYQCt8QUlOU67J+KXCxtpGw==}
 
   '@ts-morph/common@0.27.0':
     resolution: {integrity: sha512-Wf29UqxWDpc+i61k3oIOzcUfQt79PIT9y/MWfAGlrkjg6lBC1hwDECLXPVJAhWjiGbfBCxZd65F/LIZF3+jeJQ==}
@@ -5600,6 +5601,14 @@ packages:
     peerDependencies:
       preact: '>=10 || >= 11.0.0-0'
 
+  preact@10.29.8:
+    resolution: {integrity: sha512-ej2aVZ+vZ8WO7tvlQWRM9N63A0KzF9q4mWJfDUHgYaIofWY9hu74QdnQrjoPMmZi2/nZ5gN0bJCQF49xQqx09Q==}
+    peerDependencies:
+      preact-render-to-string: '>=5'
+    peerDependenciesMeta:
+      preact-render-to-string:
+        optional: true
+
   preact@11.0.0-beta.0:
     resolution: {integrity: sha512-IcODoASASYwJ9kxz7+MJeiJhvLriwSb4y4mHIyxdgaRZp6kPUud7xytrk/6GZw8U3y6EFJaRb5wi9SrEK+8+lg==}
 
@@ -7633,14 +7642,15 @@ snapshots:
       '@eslint/core': 0.13.0
       levn: 0.4.1
 
-  '@extend-ai/react-docx@0.11.2(patch_hash=olzxvw7bsmbduaezq7u5ayhfs4)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
+  '@extend-ai/react-docx@0.12.0(patch_hash=6jpfdezkpalcaczkxwnedel2hi)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@chenglou/pretext': 0.0.8
-      '@tanstack/react-virtual': 3.14.21(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      csstype: 3.2.3
       fast-png: 8.0.0
+      utif: 3.1.0
+    optionalDependencies:
       react: 19.2.3
       react-dom: 19.2.3(react@19.2.3)
-      utif: 3.1.0
 
   '@extend-ai/react-pptx@0.2.1(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
@@ -7655,21 +7665,25 @@ snapshots:
       regl: 2.1.1
       topojson-client: 3.1.0
 
-  '@extend-ai/react-xlsx@0.18.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
+  '@extend-ai/react-xlsx@0.19.0(preact-render-to-string@6.6.5(preact@11.0.0-beta.0))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@dukelib/sheets-wasm': 0.1.23
-      '@tanstack/react-virtual': 3.13.26(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      csstype: 3.2.3
       d3-geo: 3.1.1
       d3-hierarchy: 3.1.2
       d3-scale: 4.0.2
       d3-shape: 3.2.0
       fflate: 0.8.3
-      react: 19.2.3
-      react-dom: 19.2.3(react@19.2.3)
+      preact: 10.29.8(preact-render-to-string@6.6.5(preact@11.0.0-beta.0))
       regl: 2.1.1
       topojson-client: 3.1.0
       us-atlas: 3.0.1
       world-atlas: 2.0.2
+    optionalDependencies:
+      react: 19.2.3
+      react-dom: 19.2.3(react@19.2.3)
+    transitivePeerDependencies:
+      - preact-render-to-string
 
   '@floating-ui/core@1.7.5':
     dependencies:
@@ -9273,15 +9287,7 @@ snapshots:
       react: 19.2.3
       react-dom: 19.2.3(react@19.2.3)
 
-  '@tanstack/react-virtual@3.14.21(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
-    dependencies:
-      '@tanstack/virtual-core': 3.19.6
-      react: 19.2.3
-      react-dom: 19.2.3(react@19.2.3)
-
   '@tanstack/virtual-core@3.16.0': {}
-
-  '@tanstack/virtual-core@3.19.6': {}
 
   '@ts-morph/common@0.27.0':
     dependencies:
@@ -12261,6 +12267,10 @@ snapshots:
   preact-render-to-string@6.6.5(preact@11.0.0-beta.0):
     dependencies:
       preact: 11.0.0-beta.0
+
+  preact@10.29.8(preact-render-to-string@6.6.5(preact@11.0.0-beta.0)):
+    optionalDependencies:
+      preact-render-to-string: 6.6.5(preact@11.0.0-beta.0)
 
   preact@11.0.0-beta.0: {}
 

@@ -11,6 +11,9 @@ The React DOCX Viewer is for contracts, proposals, reports, and internal docs wh
 
 ## Installation
 
+First configure the [style-aware registry](/docs#installation) in
+`components.json` so the CLI uses the primitives for your project.
+
 <CodeTabs>
 
 <TabsList>
@@ -32,7 +35,7 @@ npx shadcn@latest add @extend/docx-viewer
 <Step>Install the following dependencies:</Step>
 
 ```bash
-npm install @extend-ai/react-docx@^0.11.2
+npm install @extend-ai/react-docx@0.12.0 @tanstack/react-virtual@3.13.26
 ```
 
 <Step>Install the icon library configured in your `components.json`:</Step>
@@ -45,7 +48,19 @@ so make sure that library's package is installed. When copying the source
 manually, replace each `IconPlaceholder` element with the icon named by the
 prop for your library.
 
-<Step>Copy and paste the following code into your project.</Step>
+<Step>Install the shared components and UI primitives:</Step>
+
+The manual source uses Base UI primitives. Use the Command tab for a Radix
+project so the registry adapts the source to your primitive APIs.
+
+```bash
+npx shadcn@latest add @extend/document-viewer-sidebar @extend/file-thumbnail badge card button dropdown-menu input scroll-area select separator spinner tooltip utils
+```
+
+<Step>
+  Copy both files below into your project. The annotation card is shared by
+  the viewer and editor and renders comments and tracked changes.
+</Step>
 
 <DocxViewerSource />
 

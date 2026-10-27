@@ -11,6 +11,9 @@ The React Excel Editor is an experimental spreadsheet editing surface built on t
 
 ## Installation
 
+First configure the [style-aware registry](/docs#installation) in
+`components.json` so the CLI uses the primitives for your project.
+
 <CodeTabs>
 
 <TabsList>
@@ -32,7 +35,7 @@ npx shadcn@latest add @extend/xlsx-editor
 <Step>Install the following dependencies:</Step>
 
 ```bash
-npm install @base-ui/react@^1.4.1 @extend-ai/react-xlsx@0.18.0 class-variance-authority@^0.7.1
+npm install @base-ui/react@^1.4.1 @extend-ai/react-xlsx@0.19.0 class-variance-authority@^0.7.1
 ```
 
 <Step>Install the icon library configured in your `components.json`:</Step>
@@ -46,13 +49,16 @@ manually, replace each `IconPlaceholder` element with the icon named by the
 prop for your library.
 
 <Step>
-  Install the Excel Viewer component because the editor reuses its sheet tabs
-  and table header menu, plus the Group primitive used by the formula bar and
-  the Color Picker and Toggle components used by the cell style controls.
+  Install the Excel Viewer component for its sheet tabs, context menu, scroll
+  area, and table header menu, plus the icon prop types and UI primitives used
+  by the editor:
 </Step>
 
+The manual source uses Base UI primitives. Use the Command tab for a Radix
+project so the registry adapts the source to your primitive APIs.
+
 ```bash
-npx shadcn@latest add @extend/xlsx-viewer @extend/group @extend/color-picker @extend/toggle context-menu
+npx shadcn@latest add @extend/xlsx-viewer @extend/registry-icon-props @extend/group @extend/color-picker @extend/toggle button dropdown-menu input select separator spinner tooltip utils
 ```
 
 <Step>Copy and paste the following code into your project.</Step>

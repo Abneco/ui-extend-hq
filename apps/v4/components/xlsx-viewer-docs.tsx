@@ -52,6 +52,7 @@ export function XlsxViewerDemo() {
 
 const xlsxViewerUsageCode = `"use client";
 
+import * as React from "react";
 import { XlsxViewerPreview } from "@/components/extend/xlsx-viewer";
 
 export function XlsxViewerExample() {

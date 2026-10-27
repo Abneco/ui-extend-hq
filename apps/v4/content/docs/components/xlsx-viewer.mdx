@@ -36,7 +36,7 @@ npx shadcn@latest add @extend/xlsx-viewer
 <Step>Install the following dependencies:</Step>
 
 ```bash
-npm install @extend-ai/react-xlsx@0.18.0
+npm install @extend-ai/react-xlsx@0.19.0
 ```
 
 <Step>Install the icon library configured in your `components.json`:</Step>
@@ -50,11 +50,14 @@ manually, replace each `IconPlaceholder` element with the icon named by the
 prop for your library.
 
 <Step>
-  Install the Context Menu primitive for separators and keyboard shortcuts:
+  Install the UI primitives used by the viewer, sheet tabs, and menus:
 </Step>
 
+The manual source uses Base UI primitives. Use the Command tab for a Radix
+project so the registry adapts the source to your primitive APIs.
+
 ```bash
-npx shadcn@latest add context-menu
+npx shadcn@latest add button context-menu dropdown-menu input popover scroll-area select separator spinner tabs tooltip utils
 ```
 
 <Step>Copy and paste the following code into your project.</Step>

@@ -52,6 +52,7 @@ export function XlsxEditorDemo() {
 
 const xlsxEditorUsageCode = `"use client";
 
+import * as React from "react";
 import { XlsxEditorPreview } from "@/components/extend/xlsx-editor";
 
 export function XlsxEditorExample() {

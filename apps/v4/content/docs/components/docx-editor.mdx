@@ -11,6 +11,9 @@ The React DOCX Editor is an experimental document editing surface built on top o
 
 ## Installation
 
+First configure the [style-aware registry](/docs#installation) in
+`components.json` so the CLI uses the primitives for your project.
+
 <CodeTabs>
 
 <TabsList>
@@ -32,7 +35,7 @@ npx shadcn@latest add @extend/docx-editor
 <Step>Install the following dependencies:</Step>
 
 ```bash
-npm install @base-ui/react@^1.4.1 @extend-ai/react-docx@^0.11.2
+npm install @base-ui/react@^1.4.1 @extend-ai/react-docx@0.12.0
 ```
 
 <Step>Install the icon library configured in your `components.json`:</Step>
@@ -46,15 +49,21 @@ manually, replace each `IconPlaceholder` element with the icon named by the
 prop for your library.
 
 <Step>
-  Install the File Thumbnail and Toggle components because the editor reuses
-  them for the page thumbnail rail and formatting controls.
+  Install the shared components, icon prop types, and UI primitives used by
+  the editor:
 </Step>
 
+The manual source uses Base UI primitives. Use the Command tab for a Radix
+project so the registry adapts the source to your primitive APIs.
+
 ```bash
-npx shadcn@latest add @extend/file-thumbnail @extend/toggle context-menu
+npx shadcn@latest add @extend/document-viewer-sidebar @extend/document-preview-card @extend/file-thumbnail @extend/registry-icon-props @extend/color-picker @extend/toggle badge card button context-menu dropdown-menu input scroll-area select separator spinner tooltip utils
 ```
 
-<Step>Copy and paste the following code into your project.</Step>
+<Step>
+  Copy both files below into your project. The annotation card is shared by
+  the viewer and editor and renders comments and tracked changes.
+</Step>
 
 <DocxEditorSource />
 

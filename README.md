@@ -225,6 +225,8 @@ npx shadcn@latest add @extend/e-signature
 
 ## Development
 
+Use Node.js 24.22.1, as specified in `.nvmrc`, before installing dependencies.
+
 ```bash
 pnpm install
 pnpm v4:dev

@@ -3,6 +3,8 @@
 import * as React from "react"
 import dynamic from "next/dynamic"
 
+import { DocxAnnotationCardSource } from "@/components/docx-annotation-card-source"
+
 import { withUiBasePath } from "@/lib/zone-path"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
@@ -52,6 +54,7 @@ export function DocxViewerDemo() {
 
 const docxViewerUsageCode = `"use client";
 
+import * as React from "react";
 import { DocxViewerPreview } from "@/components/extend/docx-viewer";
 
 export function DocxViewerExample() {
@@ -72,9 +75,12 @@ const docxViewerSourceCode =
 
 export function DocxViewerSource() {
   return (
+    <>
     <DocsSourceCodeBlock
       code={docxViewerSourceCode}
       fileName="components/extend/docx-viewer.tsx"
     />
+    <DocxAnnotationCardSource />
+    </>
   )
 }

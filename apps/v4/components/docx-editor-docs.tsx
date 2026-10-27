@@ -3,6 +3,8 @@
 import * as React from "react"
 import dynamic from "next/dynamic"
 
+import { DocxAnnotationCardSource } from "@/components/docx-annotation-card-source"
+
 import { withUiBasePath } from "@/lib/zone-path"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
@@ -71,6 +73,7 @@ export function DocxEditorBlock({
 
 const docxEditorUsageCode = `"use client";
 
+import * as React from "react";
 import { DocxEditorPreview } from "@/components/extend/docx-editor";
 
 export function DocxEditorExample() {
@@ -90,9 +93,12 @@ const docxEditorSourceCode =
 
 export function DocxEditorSource() {
   return (
+    <>
     <DocsSourceCodeBlock
       code={docxEditorSourceCode}
       fileName="components/extend/docx-editor.tsx"
     />
+    <DocxAnnotationCardSource />
+    </>
   )
 }
