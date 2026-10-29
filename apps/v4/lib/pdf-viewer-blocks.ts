@@ -94,7 +94,6 @@ export const PDF_VIEWER_BLOCKS = [
   {
     id: "docx-editor-block",
     title: "DOCX Editor",
-    badge: "Experimental",
     description:
       "A Word-style document editor with formatting controls, page thumbnails, and DOCX export.",
     command: getRegistryAddCommand("docx-editor-block"),

@@ -107,9 +107,6 @@ export function DocsSidebar({
                 {item.type === "folder" && (
                   <SidebarMenu className="gap-0.5">
                     {pages.map((page) => {
-                      const isExperimental =
-                        page.url === "/docs/components/xlsx-editor" ||
-                        page.url === "/docs/components/docx-editor"
                       const isNew = page.url === "/docs/components/pdf-editor"
 
                       return (
@@ -119,9 +116,7 @@ export function DocsSidebar({
                             isActive={page.url === pathname}
                             className={cn(
                               "relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md data-[active=true]:border-accent data-[active=true]:bg-accent 3xl:fixed:w-full 3xl:fixed:max-w-48",
-                              (isExperimental || isNew) &&
-                                "w-full overflow-hidden",
-                              isExperimental ? "pr-24" : isNew && "pr-12"
+                              isNew && "w-full overflow-hidden pr-12"
                             )}
                           >
                             <Link href={page.url}>
@@ -129,9 +124,9 @@ export function DocsSidebar({
                               {page.name}
                             </Link>
                           </SidebarMenuButton>
-                          {isExperimental || isNew ? (
+                          {isNew ? (
                             <SidebarMenuBadge className="right-2 rounded-full border bg-background px-1.5 text-[0.625rem] tracking-wide text-muted-foreground uppercase">
-                              {isExperimental ? "Experimental" : "New"}
+                              New
                             </SidebarMenuBadge>
                           ) : null}
                         </SidebarMenuItem>
